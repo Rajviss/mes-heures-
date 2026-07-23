@@ -2,335 +2,537 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Compteur d'Heures</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#1a1a2e">
+    <title>Mes Heures</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⏱️</text></svg>">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⏱️</text></svg>">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: #1a1a2e;
             color: #eee;
             min-height: 100vh;
-            padding: 20px;
+            padding: 20px 16px;
+            padding-top: env(safe-area-inset-top, 20px);
+            padding-bottom: env(safe-area-inset-bottom, 20px);
         }
-
-        .container {
-            max-width: 500px;
-            margin: 0 auto;
-        }
-
-        h1 {
+        .header {
             text-align: center;
-            margin-bottom: 10px;
-            font-size: 1.8em;
-            color: #fff;
+            margin-bottom: 20px;
         }
-
-        .clock {
-            text-align: center;
-            font-size: 1.2em;
-            color: #aaa;
-            margin-bottom: 25px;
-        }
-
+        .header h1 { font-size: 1.5em; }
         .status-bar {
+            text-align: center;
+            padding: 12px;
             background: #16213e;
             border-radius: 12px;
-            padding: 15px;
             margin-bottom: 20px;
-            text-align: center;
             font-size: 0.95em;
-            color: #8ecae6;
-            min-height: 50px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .btn {
-            width: 100%;
-            padding: 20px;
-            border: none;
-            border-radius: 16px;
-            font-size: 1.3em;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin-bottom: 15px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .btn:active {
-            transform: scale(0.97);
-        }
-
-        .btn-day-start {
-            background: linear-gradient(135deg, #00b894, #00cec9);
-            color: #fff;
-            box-shadow: 0 6px 20px rgba(0, 184, 148, 0.4);
-        }
-
-        .btn-day-end {
-            background: linear-gradient(135deg, #e17055, #d63031);
-            color: #fff;
-            box-shadow: 0 6px 20px rgba(214, 48, 49, 0.4);
-        }
-
-        .btn-intervention-start {
-            background: linear-gradient(135deg, #0984e3, #6c5ce7);
-            color: #fff;
-            box-shadow: 0 6px 20px rgba(9, 132, 227, 0.3);
-        }
-
-        .btn-intervention-end {
-            background: linear-gradient(135deg, #fdcb6e, #e17055);
-            color: #fff;
-            box-shadow: 0 6px 20px rgba(253, 203, 110, 0.3);
-        }
-
-        .btn-pause-start {
-            background: linear-gradient(135deg, #636e72, #2d3436);
-            color: #fff;
-            box-shadow: 0 6px 20px rgba(99, 110, 114, 0.3);
-        }
-
-        .btn-pause-end {
-            background: linear-gradient(135deg, #fdcb6e, #f39c12);
-            color: #fff;
-            box-shadow: 0 6px 20px rgba(243, 156, 18, 0.3);
-        }
-
-        .btn:disabled {
-            background: #2d3436;
-            color: #636e72;
-            box-shadow: none;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .intervention-input {
-            margin-bottom: 15px;
-            display: none;
-        }
-
-        .intervention-input label {
-            display: block;
-            margin-bottom: 8px;
             color: #aaa;
-            font-size: 0.9em;
         }
-
-        .intervention-input select,
-        .intervention-input input {
-            width: 100%;
-            padding: 14px;
-            border-radius: 10px;
-            border: 2px solid #2d3436;
-            background: #16213e;
-            color: #fff;
-            font-size: 1em;
-            margin-bottom: 8px;
-        }
-
-        .intervention-input select:focus,
-        .intervention-input input:focus {
-            outline: none;
-            border-color: #0984e3;
-        }
-
+        .status-bar.active { color: #4ade80; }
         .section {
             background: #16213e;
             border-radius: 16px;
             padding: 20px;
-            margin-bottom: 15px;
+            margin-bottom: 16px;
         }
-
-        .section h3 {
-            margin-bottom: 15px;
-            color: #dfe6e9;
-            font-size: 1em;
-            text-align: center;
+        .section-title {
+            font-size: 1.1em;
+            margin-bottom: 14px;
+            font-weight: 600;
         }
-
+        .btn {
+            width: 100%;
+            padding: 18px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1em;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: white;
+        }
+        .btn:active { transform: scale(0.97); }
+        .btn-start { background: linear-gradient(135deg, #4ade80, #22c55e); }
+        .btn-stop { background: linear-gradient(135deg, #f87171, #ef4444); }
+        .btn-pause-start { background: linear-gradient(135deg, #fbbf24, #f59e0b); }
+        .btn-pause-stop { background: linear-gradient(135deg, #fb923c, #f97316); }
+        .btn-email { background: linear-gradient(135deg, #60a5fa, #3b82f6); margin-bottom: 10px; }
+        .btn-reset { background: linear-gradient(135deg, #6b7280, #4b5563); }
+        .btn:disabled { opacity: 0.4; cursor: not-allowed; }
         .timer {
             text-align: center;
-            font-size: 1.5em;
-            font-weight: bold;
-            color: #74b9ff;
-            margin: 10px 0;
+            font-size: 1.4em;
             font-family: 'Courier New', monospace;
+            margin-top: 10px;
+            color: #fbbf24;
         }
-
-        /* Log / Résumé */
-        .log-section {
-            display: none;
-            background: #0f3460;
-            border-radius: 16px;
-            padding: 20px;
-            margin-top: 20px;
+        .input-group { margin-bottom: 14px; }
+        .input-group label {
+            display: block;
+            font-size: 0.85em;
+            color: #aaa;
+            margin-bottom: 6px;
         }
-
-        .log-section h2 {
-            text-align: center;
-            margin-bottom: 15px;
-            color: #fff;
+        .input-group select, .input-group input {
+            width: 100%;
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid #334155;
+            background: #0f172a;
+            color: #eee;
+            font-size: 1em;
         }
-
-        .log-entry {
-            background: #16213e;
+        .log-list {
+            max-height: 300px;
+            overflow-y: auto;
+            margin-bottom: 16px;
+        }
+        .log-item {
+            background: #0f172a;
             border-radius: 10px;
             padding: 12px;
             margin-bottom: 8px;
             font-size: 0.9em;
-            border-left: 4px solid #0984e3;
         }
-
-        .log-entry.pause {
-            border-left-color: #636e72;
-        }
-
-        .log-summary {
-            background: #1a1a2e;
-            border-radius: 10px;
-            padding: 15px;
-            margin-top: 15px;
+        .log-item .type { color: #60a5fa; font-weight: 600; }
+        .log-item .time { color: #4ade80; }
+        .log-item .pause-tag { color: #fbbf24; }
+        .summary-total {
             text-align: center;
-        }
-
-        .log-summary .total {
-            font-size: 1.5em;
-            font-weight: bold;
-            color: #00b894;
-        }
-
-        .btn-email {
-            background: linear-gradient(135deg, #00b894, #00cec9);
-            color: #fff;
-            box-shadow: 0 6px 20px rgba(0, 184, 148, 0.3);
-            margin-top: 15px;
-            font-size: 1.1em;
             padding: 16px;
+            background: #0f172a;
+            border-radius: 12px;
+            margin-bottom: 16px;
         }
-
-        .btn-reset {
-            background: linear-gradient(135deg, #636e72, #2d3436);
-            color: #fff;
-            margin-top: 10px;
-            font-size: 0.9em;
-            padding: 14px;
-        }
-
-        .running-indicator {
-            display: inline-block;
-            width: 10px;
-            height: 10px;
-            background: #00b894;
-            border-radius: 50%;
-            animation: pulse 1.5s infinite;
-            margin-right: 8px;
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.3; }
-        }
-
+        .summary-total .label { color: #aaa; font-size: 0.9em; }
+        .summary-total .value { font-size: 2em; font-weight: 700; color: #4ade80; }
         .hidden { display: none !important; }
+        .history-section {
+            background: #16213e;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 16px;
+        }
+        .history-item {
+            background: #0f172a;
+            border-radius: 10px;
+            padding: 12px;
+            margin-bottom: 8px;
+            font-size: 0.85em;
+        }
+        .history-item .date { color: #60a5fa; font-weight: 600; }
+        .history-item .hours { color: #4ade80; }
+        .btn-clear-history { background: linear-gradient(135deg, #dc2626, #b91c1c); margin-top: 10px; }
     </style>
 </head>
 <body>
-    <div class="container">
+
+    <div class="header">
         <h1>⏱️ Mes Heures</h1>
-        <div class="clock" id="clock"></div>
+    </div>
 
-        <div class="status-bar" id="statusBar">
-            Prêt à commencer la journée
-        </div>
+    <div class="status-bar" id="statusBar">
+        Prêt à commencer la journée
+    </div>
 
-        <!-- Bouton Journée -->
-        <button class="btn btn-day-start" id="btnDay" onclick="toggleDay()">
+    <!-- BOUTON JOURNEE -->
+    <div class="section">
+        <button class="btn btn-start" id="btnDay" onclick="toggleDay()">
             ☀️ Début de Journée
         </button>
+    </div>
 
-        <!-- Section Intervention -->
-        <div class="section hidden" id="interventionSection">
-            <h3>🔧 Intervention / Chantier</h3>
-            <div class="intervention-input" id="interventionInput">
-                <label>Chantier :</label>
-                <select id="chantierSelect" onchange="onChantierSelect()">
-                    <option value="">-- Choisir un chantier existant --</option>
-                </select>
-                <input type="text" id="chantierText" placeholder="Ou saisir un nouveau chantier..." />
-            </div>
-            <button class="btn btn-intervention-start" id="btnIntervention" onclick="toggleIntervention()">
-                ▶️ Début Intervention
-            </button>
-            <div class="timer hidden" id="interventionTimer">00:00:00</div>
+    <!-- INTERVENTIONS -->
+    <div class="section hidden" id="interventionSection">
+        <div class="section-title">🔧 Intervention / Chantier</div>
+        <div class="input-group">
+            <select id="chantierSelect" onchange="onSelectChantier()">
+                <option value="">-- Choisir un chantier existant --</option>
+            </select>
         </div>
+        <div class="input-group">
+            <input type="text" id="chantierInput" placeholder="Ou saisir un nouveau chantier...">
+        </div>
+        <button class="btn btn-start" id="btnIntervention" onclick="toggleIntervention()">
+            ▶️ Début Intervention
+        </button>
+        <div class="timer" id="interventionTimer">00:00:00</div>
+    </div>
 
-        <!-- Section Pause -->
-        <div class="section hidden" id="pauseSection">
-            <h3>☕ Pause</h3>
-            <button class="btn btn-pause-start" id="btnPause" onclick="togglePause()">
-                ⏸️ Début Pause
-            </button>
-            <div class="timer hidden" id="pauseTimer">00:00:00</div>
-        </div>
+    <!-- PAUSE -->
+    <div class="section hidden" id="pauseSection">
+        <div class="section-title">☕ Pause</div>
+        <button class="btn btn-pause-start" id="btnPause" onclick="togglePause()">
+            ⏸️ Début Pause
+        </button>
+        <div class="timer" id="pauseTimer">00:00:00</div>
+    </div>
 
-        <!-- Log de fin de journée -->
-        <div class="log-section" id="logSection">
-            <h2>📋 Résumé de la Journée</h2>
-            <div id="logEntries"></div>
-            <div class="log-summary">
-                <div>Temps total travaillé</div>
-                <div class="total" id="totalWorked">--:--</div>
-                <div style="margin-top:8px; color:#aaa; font-size:0.85em;">
-                    <span id="totalPauseDisplay"></span>
-                </div>
-            </div>
-            <button class="btn btn-email" onclick="sendByEmail()">
-                📧 Envoyer par Email
-            </button>
-            <button class="btn btn-reset" onclick="resetAll()">
-                🔄 Nouvelle Journée
-            </button>
+    <!-- RESUME -->
+    <div class="section hidden" id="summarySection">
+        <div class="section-title">📋 Résumé de la Journée</div>
+        <div class="log-list" id="logList"></div>
+        <div class="summary-total">
+            <div class="label">Temps total travaillé</div>
+            <div class="value" id="totalWorked">--:--</div>
         </div>
+        <button class="btn btn-email" onclick="sendEmail()">📧 Envoyer par Email</button>
+        <button class="btn btn-reset" onclick="resetDay()">🔄 Nouvelle Journée</button>
+    </div>
+
+    <!-- HISTORIQUE -->
+    <div class="history-section" id="historySection">
+        <div class="section-title">📅 Historique</div>
+        <div id="historyList"></div>
+        <button class="btn btn-clear-history hidden" id="btnClearHistory" onclick="clearHistory()">🗑️ Effacer l'historique</button>
     </div>
 
     <script>
-        // State
+        // ========== STATE ==========
         let state = {
             dayStarted: false,
-            dayStart: null,
-            dayEnd: null,
-            interventionRunning: false,
-            interventionStart: null,
-            pauseRunning: false,
-            pauseStart: null,
-            interventions: [], // {chantier, start, end, duration}
-            pauses: [],       // {start, end, duration}
-            chantiers: JSON.parse(localStorage.getItem('chantiers') || '[]')
+            dayStartTime: null,
+            dayEndTime: null,
+            interventionActive: false,
+            interventionStartTime: null,
+            currentChantier: '',
+            pauseActive: false,
+            pauseStartTime: null,
+            logs: [],
+            chantiers: []
         };
 
         let interventionInterval = null;
         let pauseInterval = null;
 
-        // Clock
-        function updateClock() {
-            const now = new Date();
-            document.getElementById('clock').textContent = now.toLocaleTimeString('fr-CH');
+        // ========== PERSISTENCE ==========
+        function saveState() {
+            localStorage.setItem('mesHeuresState', JSON.stringify(state));
         }
-        setInterval(updateClock, 1000);
-        updateClock();
 
-        // Load saved chantiers
-        function loadChantiers() {
+        function loadState() {
+            const saved = localStorage.getItem('mesHeuresState');
+            if (saved) {
+                state = JSON.parse(saved);
+            }
+            // Always load chantiers list
+            const chantiers = localStorage.getItem('mesHeuresChantiers');
+            if (chantiers) {
+                state.chantiers = JSON.parse(chantiers);
+            }
+        }
+
+        function saveChantiers() {
+            localStorage.setItem('mesHeuresChantiers', JSON.stringify(state.chantiers));
+        }
+
+        function saveHistory(entry) {
+            let history = JSON.parse(localStorage.getItem('mesHeuresHistory') || '[]');
+            history.unshift(entry);
+            // Keep last 60 days max
+            if (history.length > 60) history = history.slice(0, 60);
+            localStorage.setItem('mesHeuresHistory', JSON.stringify(history));
+        }
+
+        // ========== INIT ==========
+        function init() {
+            loadState();
+            populateChantierSelect();
+            restoreUI();
+            renderHistory();
+        }
+
+        function restoreUI() {
+            if (state.dayStarted && !state.dayEndTime) {
+                // Day is active
+                document.getElementById('btnDay').className = 'btn btn-stop';
+                document.getElementById('btnDay').textContent = '🌙 Fin de Journée';
+                document.getElementById('interventionSection').classList.remove('hidden');
+                document.getElementById('pauseSection').classList.remove('hidden');
+                document.getElementById('statusBar').textContent = '⏱️ Journée en cours depuis ' + formatTime(new Date(state.dayStartTime));
+                document.getElementById('statusBar').className = 'status-bar active';
+
+                if (state.interventionActive) {
+                    document.getElementById('btnIntervention').className = 'btn btn-stop';
+                    document.getElementById('btnIntervention').textContent = '⏹️ Fin Intervention';
+                    document.getElementById('chantierInput').value = state.currentChantier;
+                    startInterventionTimer();
+                }
+                if (state.pauseActive) {
+                    document.getElementById('btnPause').className = 'btn btn-pause-stop';
+                    document.getElementById('btnPause').textContent = '▶️ Fin Pause';
+                    startPauseTimer();
+                }
+            } else if (state.dayEndTime) {
+                // Day ended, show summary
+                showSummary();
+            }
+        }
+
+        // ========== JOURNEE ==========
+        function toggleDay() {
+            if (!state.dayStarted) {
+                // Start day
+                state.dayStarted = true;
+                state.dayStartTime = new Date().toISOString();
+                state.dayEndTime = null;
+                state.logs = [];
+                saveState();
+
+                document.getElementById('btnDay').className = 'btn btn-stop';
+                document.getElementById('btnDay').textContent = '🌙 Fin de Journée';
+                document.getElementById('interventionSection').classList.remove('hidden');
+                document.getElementById('pauseSection').classList.remove('hidden');
+                document.getElementById('summarySection').classList.add('hidden');
+                document.getElementById('statusBar').textContent = '⏱️ Journée en cours depuis ' + formatTime(new Date(state.dayStartTime));
+                document.getElementById('statusBar').className = 'status-bar active';
+            } else {
+                // End day
+                if (state.interventionActive) toggleIntervention();
+                if (state.pauseActive) togglePause();
+
+                state.dayEndTime = new Date().toISOString();
+                saveState();
+                showSummary();
+            }
+        }
+
+        // ========== INTERVENTION ==========
+        function toggleIntervention() {
+            if (!state.interventionActive) {
+                // Stop pause if active
+                if (state.pauseActive) togglePause();
+
+                const chantier = document.getElementById('chantierInput').value.trim() || 
+                                 document.getElementById('chantierSelect').value;
+                if (!chantier) {
+                    alert('Choisis ou saisis un chantier !');
+                    return;
+                }
+
+                state.interventionActive = true;
+                state.interventionStartTime = new Date().toISOString();
+                state.currentChantier = chantier;
+
+                // Save chantier to list
+                if (!state.chantiers.includes(chantier)) {
+                    state.chantiers.push(chantier);
+                    saveChantiers();
+                    populateChantierSelect();
+                }
+
+                saveState();
+
+                document.getElementById('btnIntervention').className = 'btn btn-stop';
+                document.getElementById('btnIntervention').textContent = '⏹️ Fin Intervention';
+                startInterventionTimer();
+            } else {
+                // End intervention
+                const endTime = new Date();
+                const startTime = new Date(state.interventionStartTime);
+                const duration = endTime - startTime;
+
+                state.logs.push({
+                    type: 'intervention',
+                    chantier: state.currentChantier,
+                    start: state.interventionStartTime,
+                    end: endTime.toISOString(),
+                    duration: duration
+                });
+
+                state.interventionActive = false;
+                state.interventionStartTime = null;
+                saveState();
+
+                clearInterval(interventionInterval);
+                document.getElementById('btnIntervention').className = 'btn btn-start';
+                document.getElementById('btnIntervention').textContent = '▶️ Début Intervention';
+                document.getElementById('interventionTimer').textContent = '00:00:00';
+            }
+        }
+
+        function startInterventionTimer() {
+            clearInterval(interventionInterval);
+            interventionInterval = setInterval(() => {
+                const elapsed = Date.now() - new Date(state.interventionStartTime).getTime();
+                document.getElementById('interventionTimer').textContent = formatDuration(elapsed);
+            }, 1000);
+        }
+
+        // ========== PAUSE ==========
+        function togglePause() {
+            if (!state.pauseActive) {
+                // Stop intervention if active
+                if (state.interventionActive) toggleIntervention();
+
+                state.pauseActive = true;
+                state.pauseStartTime = new Date().toISOString();
+                saveState();
+
+                document.getElementById('btnPause').className = 'btn btn-pause-stop';
+                document.getElementById('btnPause').textContent = '▶️ Fin Pause';
+                startPauseTimer();
+            } else {
+                const endTime = new Date();
+                const startTime = new Date(state.pauseStartTime);
+                const duration = endTime - startTime;
+
+                state.logs.push({
+                    type: 'pause',
+                    start: state.pauseStartTime,
+                    end: endTime.toISOString(),
+                    duration: duration
+                });
+
+                state.pauseActive = false;
+                state.pauseStartTime = null;
+                saveState();
+
+                clearInterval(pauseInterval);
+                document.getElementById('btnPause').className = 'btn btn-pause-start';
+                document.getElementById('btnPause').textContent = '⏸️ Début Pause';
+                document.getElementById('pauseTimer').textContent = '00:00:00';
+            }
+        }
+
+        function startPauseTimer() {
+            clearInterval(pauseInterval);
+            pauseInterval = setInterval(() => {
+                const elapsed = Date.now() - new Date(state.pauseStartTime).getTime();
+                document.getElementById('pauseTimer').textContent = formatDuration(elapsed);
+            }, 1000);
+        }
+
+        // ========== SUMMARY ==========
+        function showSummary() {
+            document.getElementById('interventionSection').classList.add('hidden');
+            document.getElementById('pauseSection').classList.add('hidden');
+            document.getElementById('summarySection').classList.remove('hidden');
+            document.getElementById('btnDay').classList.add('hidden');
+
+            document.getElementById('statusBar').textContent = '✅ Journée terminée';
+            document.getElementById('statusBar').className = 'status-bar';
+
+            const logList = document.getElementById('logList');
+            logList.innerHTML = '';
+
+            let totalWork = 0;
+            let totalPause = 0;
+
+            state.logs.forEach(log => {
+                const div = document.createElement('div');
+                div.className = 'log-item';
+                const start = formatTime(new Date(log.start));
+                const end = formatTime(new Date(log.end));
+                const dur = formatDuration(log.duration);
+
+                if (log.type === 'intervention') {
+                    totalWork += log.duration;
+                    div.innerHTML = `<span class="type">🔧 ${log.chantier}</span><br>${start} → ${end} <span class="time">(${dur})</span>`;
+                } else {
+                    totalPause += log.duration;
+                    div.innerHTML = `<span class="pause-tag">☕ Pause</span><br>${start} → ${end} <span class="time">(${dur})</span>`;
+                }
+                logList.appendChild(div);
+            });
+
+            document.getElementById('totalWorked').textContent = formatDuration(totalWork);
+
+            // Save to history
+            const dayDate = new Date(state.dayStartTime).toLocaleDateString('fr-CH');
+            saveHistory({
+                date: dayDate,
+                totalWork: totalWork,
+                totalPause: totalPause,
+                logs: state.logs
+            });
+            renderHistory();
+        }
+
+        // ========== EMAIL ==========
+        function sendEmail() {
+            let body = `Rapport du ${new Date(state.dayStartTime).toLocaleDateString('fr-CH')}%0A`;
+            body += `Début: ${formatTime(new Date(state.dayStartTime))}%0A`;
+            body += `Fin: ${formatTime(new Date(state.dayEndTime))}%0A%0A`;
+
+            let totalWork = 0;
+            state.logs.forEach(log => {
+                const start = formatTime(new Date(log.start));
+                const end = formatTime(new Date(log.end));
+                const dur = formatDuration(log.duration);
+                if (log.type === 'intervention') {
+                    totalWork += log.duration;
+                    body += `🔧 ${log.chantier}: ${start}-${end} (${dur})%0A`;
+                } else {
+                    body += `☕ Pause: ${start}-${end} (${dur})%0A`;
+                }
+            });
+
+            body += `%0ATotal travaillé: ${formatDuration(totalWork)}%0A`;
+
+            const subject = `Heures du ${new Date(state.dayStartTime).toLocaleDateString('fr-CH')}`;
+            window.location.href = `mailto:?subject=${subject}&body=${body}`;
+        }
+
+        // ========== RESET ==========
+        function resetDay() {
+            if (!confirm('Commencer une nouvelle journée ?')) return;
+            state.dayStarted = false;
+            state.dayStartTime = null;
+            state.dayEndTime = null;
+            state.interventionActive = false;
+            state.interventionStartTime = null;
+            state.currentChantier = '';
+            state.pauseActive = false;
+            state.pauseStartTime = null;
+            state.logs = [];
+            saveState();
+
+            document.getElementById('btnDay').className = 'btn btn-start';
+            document.getElementById('btnDay').textContent = '☀️ Début de Journée';
+            document.getElementById('btnDay').classList.remove('hidden');
+            document.getElementById('summarySection').classList.add('hidden');
+            document.getElementById('statusBar').textContent = 'Prêt à commencer la journée';
+            document.getElementById('statusBar').className = 'status-bar';
+        }
+
+        // ========== HISTORY ==========
+        function renderHistory() {
+            const history = JSON.parse(localStorage.getItem('mesHeuresHistory') || '[]');
+            const container = document.getElementById('historyList');
+            const btn = document.getElementById('btnClearHistory');
+
+            if (history.length === 0) {
+                container.innerHTML = '<p style="color:#aaa;font-size:0.85em;">Aucun historique</p>';
+                btn.classList.add('hidden');
+                return;
+            }
+
+            btn.classList.remove('hidden');
+            container.innerHTML = '';
+            history.slice(0, 10).forEach(entry => {
+                const div = document.createElement('div');
+                div.className = 'history-item';
+                div.innerHTML = `<span class="date">📅 ${entry.date}</span> — <span class="hours">${formatDuration(entry.totalWork)}</span> travaillé, <span style="color:#fbbf24">${formatDuration(entry.totalPause)}</span> pause`;
+                container.appendChild(div);
+            });
+        }
+
+        function clearHistory() {
+            if (confirm('Effacer tout l\'historique ?')) {
+                localStorage.removeItem('mesHeuresHistory');
+                renderHistory();
+            }
+        }
+
+        // ========== HELPERS ==========
+        function populateChantierSelect() {
             const select = document.getElementById('chantierSelect');
             select.innerHTML = '<option value="">-- Choisir un chantier existant --</option>';
             state.chantiers.forEach(c => {
@@ -340,295 +542,26 @@
                 select.appendChild(opt);
             });
         }
-        loadChantiers();
 
-        function onChantierSelect() {
+        function onSelectChantier() {
             const val = document.getElementById('chantierSelect').value;
-            if (val) {
-                document.getElementById('chantierText').value = val;
-            }
-        }
-
-        function saveChantier(name) {
-            if (name && !state.chantiers.includes(name)) {
-                state.chantiers.push(name);
-                localStorage.setItem('chantiers', JSON.stringify(state.chantiers));
-                loadChantiers();
-            }
-        }
-
-        // Format duration
-        function formatDuration(ms) {
-            const totalSec = Math.floor(ms / 1000);
-            const h = Math.floor(totalSec / 3600);
-            const m = Math.floor((totalSec % 3600) / 60);
-            const s = totalSec % 60;
-            return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+            if (val) document.getElementById('chantierInput').value = val;
         }
 
         function formatTime(date) {
-            return date.toLocaleTimeString('fr-CH', {hour: '2-digit', minute: '2-digit'});
+            return date.toLocaleTimeString('fr-CH', { hour: '2-digit', minute: '2-digit' });
         }
 
-        function setStatus(html) {
-            document.getElementById('statusBar').innerHTML = html;
+        function formatDuration(ms) {
+            const s = Math.floor(ms / 1000);
+            const h = Math.floor(s / 3600);
+            const m = Math.floor((s % 3600) / 60);
+            const sec = s % 60;
+            return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
         }
 
-        // DAY
-        function toggleDay() {
-            if (!state.dayStarted) {
-                startDay();
-            } else {
-                endDay();
-            }
-        }
-
-        function startDay() {
-            state.dayStarted = true;
-            state.dayStart = new Date();
-            const btn = document.getElementById('btnDay');
-            btn.className = 'btn btn-day-end';
-            btn.innerHTML = '🌙 Fin de Journée';
-            document.getElementById('interventionSection').classList.remove('hidden');
-            document.getElementById('pauseSection').classList.remove('hidden');
-            setStatus(`<span class="running-indicator"></span> Journée commencée à ${formatTime(state.dayStart)}`);
-        }
-
-        function endDay() {
-            // End running intervention/pause first
-            if (state.interventionRunning) toggleIntervention();
-            if (state.pauseRunning) togglePause();
-
-            state.dayEnd = new Date();
-            state.dayStarted = false;
-
-            document.getElementById('btnDay').classList.add('hidden');
-            document.getElementById('interventionSection').classList.add('hidden');
-            document.getElementById('pauseSection').classList.add('hidden');
-
-            showLog();
-        }
-
-        // INTERVENTION
-        function toggleIntervention() {
-            if (!state.interventionRunning) {
-                startIntervention();
-            } else {
-                endIntervention();
-            }
-        }
-
-        function startIntervention() {
-            if (state.pauseRunning) return alert("Termine d'abord la pause !");
-
-            document.getElementById('interventionInput').style.display = 'block';
-            const chantier = document.getElementById('chantierText').value.trim();
-            if (!chantier) {
-                alert("Indique un chantier avant de démarrer !");
-                return;
-            }
-
-            state.interventionRunning = true;
-            state.interventionStart = new Date();
-            saveChantier(chantier);
-
-            const btn = document.getElementById('btnIntervention');
-            btn.className = 'btn btn-intervention-end';
-            btn.innerHTML = '⏹️ Fin Intervention';
-            document.getElementById('interventionTimer').classList.remove('hidden');
-            document.getElementById('interventionInput').style.display = 'none';
-
-            setStatus(`<span class="running-indicator"></span> Intervention: ${chantier}`);
-
-            interventionInterval = setInterval(() => {
-                const elapsed = Date.now() - state.interventionStart.getTime();
-                document.getElementById('interventionTimer').textContent = formatDuration(elapsed);
-            }, 1000);
-        }
-
-        function endIntervention() {
-            state.interventionRunning = false;
-            const end = new Date();
-            const duration = end - state.interventionStart;
-            const chantier = document.getElementById('chantierText').value.trim();
-
-            state.interventions.push({
-                chantier: chantier,
-                start: state.interventionStart,
-                end: end,
-                duration: duration
-            });
-
-            clearInterval(interventionInterval);
-            const btn = document.getElementById('btnIntervention');
-            btn.className = 'btn btn-intervention-start';
-            btn.innerHTML = '▶️ Début Intervention';
-            document.getElementById('interventionTimer').classList.add('hidden');
-            document.getElementById('interventionInput').style.display = 'block';
-            document.getElementById('chantierText').value = '';
-            document.getElementById('chantierSelect').value = '';
-
-            setStatus(`<span class="running-indicator"></span> Journée en cours — en attente`);
-        }
-
-        // Show intervention input when section visible
-        document.getElementById('interventionSection').addEventListener('transitionend', () => {
-            if (!document.getElementById('interventionSection').classList.contains('hidden')) {
-                document.getElementById('interventionInput').style.display = 'block';
-            }
-        });
-
-        // Make sure input shows when day starts
-        const observer = new MutationObserver(() => {
-            if (!document.getElementById('interventionSection').classList.contains('hidden') && !state.interventionRunning) {
-                document.getElementById('interventionInput').style.display = 'block';
-            }
-        });
-        observer.observe(document.getElementById('interventionSection'), {attributes: true});
-
-        // PAUSE
-        function togglePause() {
-            if (!state.pauseRunning) {
-                startPause();
-            } else {
-                endPause();
-            }
-        }
-
-        function startPause() {
-            if (state.interventionRunning) {
-                // Auto-end intervention
-                endIntervention();
-            }
-
-            state.pauseRunning = true;
-            state.pauseStart = new Date();
-
-            const btn = document.getElementById('btnPause');
-            btn.className = 'btn btn-pause-end';
-            btn.innerHTML = '▶️ Fin Pause';
-            document.getElementById('pauseTimer').classList.remove('hidden');
-
-            setStatus(`<span class="running-indicator"></span> En pause depuis ${formatTime(state.pauseStart)}`);
-
-            pauseInterval = setInterval(() => {
-                const elapsed = Date.now() - state.pauseStart.getTime();
-                document.getElementById('pauseTimer').textContent = formatDuration(elapsed);
-            }, 1000);
-        }
-
-        function endPause() {
-            state.pauseRunning = false;
-            const end = new Date();
-            const duration = end - state.pauseStart;
-
-            state.pauses.push({
-                start: state.pauseStart,
-                end: end,
-                duration: duration
-            });
-
-            clearInterval(pauseInterval);
-            const btn = document.getElementById('btnPause');
-            btn.className = 'btn btn-pause-start';
-            btn.innerHTML = '⏸️ Début Pause';
-            document.getElementById('pauseTimer').classList.add('hidden');
-
-            setStatus(`<span class="running-indicator"></span> Journée en cours — en attente`);
-        }
-
-        // LOG
-        function showLog() {
-            const logSection = document.getElementById('logSection');
-            const logEntries = document.getElementById('logEntries');
-            logEntries.innerHTML = '';
-
-            // Day header
-            const dayEntry = document.createElement('div');
-            dayEntry.className = 'log-entry';
-            dayEntry.innerHTML = `<strong>📅 Journée:</strong> ${formatTime(state.dayStart)} → ${formatTime(state.dayEnd)}`;
-            logEntries.appendChild(dayEntry);
-
-            // Interventions
-            state.interventions.forEach(iv => {
-                const entry = document.createElement('div');
-                entry.className = 'log-entry';
-                entry.innerHTML = `<strong>🔧 ${iv.chantier}</strong><br>${formatTime(iv.start)} → ${formatTime(iv.end)} (${formatDuration(iv.duration)})`;
-                logEntries.appendChild(entry);
-            });
-
-            // Pauses
-            state.pauses.forEach(p => {
-                const entry = document.createElement('div');
-                entry.className = 'log-entry pause';
-                entry.innerHTML = `<strong>☕ Pause</strong><br>${formatTime(p.start)} → ${formatTime(p.end)} (${formatDuration(p.duration)})`;
-                logEntries.appendChild(entry);
-            });
-
-            // Totals
-            const totalDay = state.dayEnd - state.dayStart;
-            const totalPause = state.pauses.reduce((sum, p) => sum + p.duration, 0);
-            const totalWorked = totalDay - totalPause;
-
-            document.getElementById('totalWorked').textContent = formatDuration(totalWorked);
-            document.getElementById('totalPauseDisplay').textContent = `Pauses: ${formatDuration(totalPause)} | Présence: ${formatDuration(totalDay)}`;
-
-            logSection.style.display = 'block';
-            setStatus('✅ Journée terminée !');
-        }
-
-        // EMAIL
-        function sendByEmail() {
-            const date = state.dayStart.toLocaleDateString('fr-CH');
-            let body = `RAPPORT D'HEURES - ${date}%0D%0A`;
-            body += `================================%0D%0A%0D%0A`;
-            body += `Journée: ${formatTime(state.dayStart)} → ${formatTime(state.dayEnd)}%0D%0A%0D%0A`;
-
-            body += `INTERVENTIONS:%0D%0A`;
-            state.interventions.forEach(iv => {
-                body += `• ${iv.chantier}: ${formatTime(iv.start)} → ${formatTime(iv.end)} (${formatDuration(iv.duration)})%0D%0A`;
-            });
-
-            body += `%0D%0APAUSES:%0D%0A`;
-            state.pauses.forEach(p => {
-                body += `• ${formatTime(p.start)} → ${formatTime(p.end)} (${formatDuration(p.duration)})%0D%0A`;
-            });
-
-            const totalDay = state.dayEnd - state.dayStart;
-            const totalPause = state.pauses.reduce((sum, p) => sum + p.duration, 0);
-            const totalWorked = totalDay - totalPause;
-
-            body += `%0D%0A================================%0D%0A`;
-            body += `TOTAL TRAVAILLÉ: ${formatDuration(totalWorked)}%0D%0A`;
-            body += `Total pauses: ${formatDuration(totalPause)}%0D%0A`;
-            body += `Présence totale: ${formatDuration(totalDay)}%0D%0A`;
-
-            const subject = `Rapport heures - ${date}`;
-            window.location.href = `mailto:?subject=${subject}&body=${body}`;
-        }
-
-        // RESET
-        function resetAll() {
-            if (!confirm('Commencer une nouvelle journée ?')) return;
-            state = {
-                dayStarted: false,
-                dayStart: null,
-                dayEnd: null,
-                interventionRunning: false,
-                interventionStart: null,
-                pauseRunning: false,
-                pauseStart: null,
-                interventions: [],
-                pauses: [],
-                chantiers: state.chantiers // keep chantiers
-            };
-            document.getElementById('logSection').style.display = 'none';
-            const btn = document.getElementById('btnDay');
-            btn.className = 'btn btn-day-start';
-            btn.innerHTML = '☀️ Début de Journée';
-            btn.classList.remove('hidden');
-            setStatus('Prêt à commencer la journée');
-        }
+        // ========== START ==========
+        init();
     </script>
 </body>
 </html>
